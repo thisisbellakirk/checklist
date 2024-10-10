@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -89,10 +89,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 const MainLayout = () => {
     const navigate = useNavigate();
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     const theme = useTheme();
     const [open, setOpen] = useState(true);
-
+    useEffect(() => {
+        setSelectedIndex(0);
+        navigate(items[0].path);
+    }, []);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -147,7 +151,10 @@ const MainLayout = () => {
             path: "/fea-create"
         }
     ];
-
+    const handleItemClick = (index, path) => {
+        setSelectedIndex(index); // Set selected index
+        navigate(path); // Navigate to the selected item's path
+    };
 
     const pages = ["LEARN", "MINGLE", "option"];
     return (
@@ -180,7 +187,6 @@ const MainLayout = () => {
                                 aria-label="account of current user"
                                 aria-controls="menu-appbar"
                                 aria-haspopup="true"
-                                //   onClick={handleOpenNavMenu}
                                 color="inherit"
                             >
                                 <MenuIcon />
@@ -196,8 +202,6 @@ const MainLayout = () => {
                                     vertical: "top",
                                     horizontal: "left",
                                 }}
-                                //   open={Boolean(anchorElNav)}
-                                //   onClose={handleCloseNavMenu}
                                 sx={{ display: { xs: "block", md: "none" } }}
                             >
                                 {pages.map((page) => (
@@ -229,8 +233,6 @@ const MainLayout = () => {
                                     vertical: "top",
                                     horizontal: "left",
                                 }}
-                                //   open={Boolean(anchorElNav)}
-                                //   onClose={handleCloseNavMenu}
                                 sx={{ display: { xs: "block", md: "none" } }}
                             >
                                 {pages.map((page) => (
@@ -273,9 +275,7 @@ const MainLayout = () => {
                                 size="large"
                                 edge="end"
                                 aria-label="account of current user"
-                                //   aria-controls={menuId}
                                 aria-haspopup="true"
-                                //   onClick={handleProfileMenuOpen}
                                 color="inherit"
                             >
                                 <AccountCircle sx={{ color: "black" }} />
@@ -298,30 +298,17 @@ const MainLayout = () => {
                     anchor="left"
                     open={open}
                 >
-                    {/* <DrawerHeader
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "end",
-                        }}
-                    >
-                        <IconButton onClick={handleDrawerClose}>
-                            {theme.direction === "ltr" ? (
-                                <ChevronLeftIcon />
-                            ) : (
-                                <ChevronRightIcon />
-                            )}
-                        </IconButton>
-                    </DrawerHeader> */}
                     <img src={logo} alt="logo" width="100%" height="auto" />
                     <List>
                         {items.map((item, index) => (
                             <Link to={item.path} style={{ textDecoration: 'none' }}>
                                 <ListItem key={index} disablePadding >
-                                    <ListItemButton onClick={item.onClick} sx={{
+                                    <ListItemButton onClick={() => handleItemClick(index, item.path)} sx={{
                                         '&:hover': {
                                             background: "#DCAE96", borderRadius: "10px"
                                         },
+                                        background: selectedIndex === index ? "#DCAE96" : "transparent", borderRadius: selectedIndex === index ? "10px" : ""
+
                                     }}>
                                         <ListItemIcon sx={{ minWidth: "35px !important" }}>{item.icon}</ListItemIcon>
                                         <Typography className="menu-item" >{item.text}</Typography>
@@ -329,10 +316,6 @@ const MainLayout = () => {
                                 </ListItem>
                             </Link>
                         ))}
-
-                        {/* <Menu.Item key={item.key} icon={<item.icon />}>
-                            <Link to={item.path}>{item.label}</Link>
-                        </Menu.Item> */}
                     </List>
                 </Drawer>
                 <Main open={open}>
